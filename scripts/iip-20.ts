@@ -4,6 +4,7 @@ import { AlphaProposalBuilder } from "@idle-finance/hardhat-proposals-plugin/dis
 
 const addresses = require("../common/addresses")
 const ERC20_ABI = require("../abi/ERC20.json");
+const GAUGE_PROXY_ABI = require("../abi/GaugeProxy.json");
 const IdleControllerAbi = require("../abi/IdleController.json");
 const UnitrollerAbi = require("../abi/Unitroller.json");
 const FeeCollectorABI = require("../abi/FeeCollector.json")
@@ -34,6 +35,7 @@ export default task("iip-20", iipDescription)
     const ecosystemFund = await hre.ethers.getContractAt(GovernableFundABI, addresses.ecosystemFund);
     const idleController = await hre.ethers.getContractAt(IdleControllerAbi, addresses.idleController);
     const idleToken = await hre.ethers.getContractAt(ERC20_ABI, addresses.IDLE); // idle token    
+    const gaugeProxy = await hre.ethers.getContractAt(GAUGE_PROXY_ABI, addresses.gaugeProxy);
     // Get balances for tests
     const treasuryIdleBalanceBefore = await idleToken.balanceOf(addresses.treasuryMultisig);
     const gaugeIdleBalanceBefore = await idleToken.balanceOf(addresses.gaugeDistributor);
@@ -44,6 +46,7 @@ export default task("iip-20", iipDescription)
       .addContractAction(ecosystemFund, "transfer", [addresses.IDLE, addresses.treasuryMultisig, idleAmountToTransfer])
       .addContractAction(idleController, "_withdrawToken", [addresses.IDLE, addresses.gaugeDistributor, idleFromController])
       .addContractAction(idleController, "_setIdleRate", [newIdleControllerRate])
+      .addContractAction(gaugeProxy, "commit_set_admins", [addresses.treasuryMultisig, addresses.devLeagueMultisig]);
 
     // Print and execute proposal
     proposalBuilder.setDescription(iipDescription);

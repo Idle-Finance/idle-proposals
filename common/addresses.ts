@@ -813,5 +813,6 @@ module.exports = {
   randomAddr,
   // Gauges
   gaugeDistributor: '0x1276A8ee84900bD8CcA6e9b3ccB99FF4771Fe329',
+  gaugeProxy: '0xBb1CB94F14881DDa38793d7F6F99d96Db0594051',
   AALidoMultirewards: '0xA357AF9430e4504419A7A05e217D4A490Ecec6FA'
 };
