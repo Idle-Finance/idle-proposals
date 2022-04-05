@@ -4,6 +4,7 @@ import { AlphaProposalBuilder } from "@idle-finance/hardhat-proposals-plugin/dis
 
 const addresses = require("../common/addresses")
 const ERC20_ABI = require("../abi/ERC20.json");
+const GAUGE_PROXY_ABI = require("../abi/GaugeProxy.json");
 const IdleControllerAbi = require("../abi/IdleController.json");
 const UnitrollerAbi = require("../abi/Unitroller.json");
 const FeeCollectorABI = require("../abi/FeeCollector.json")
@@ -30,10 +31,11 @@ export default task("iip-20", iipDescription)
     const idleFromController = toBN(178200).mul(ONE);
     // 0.3875 per block (considering 8 months left)
     const newIdleControllerRate = toBN('387500000000000000');
-    
+
     const ecosystemFund = await hre.ethers.getContractAt(GovernableFundABI, addresses.ecosystemFund);
     const idleController = await hre.ethers.getContractAt(IdleControllerAbi, addresses.idleController);
     const idleToken = await hre.ethers.getContractAt(ERC20_ABI, addresses.IDLE); // idle token    
+    const gaugeProxy = await hre.ethers.getContractAt(GAUGE_PROXY_ABI, addresses.gaugeProxy);
     // Get balances for tests
     const treasuryIdleBalanceBefore = await idleToken.balanceOf(addresses.treasuryMultisig);
     const gaugeIdleBalanceBefore = await idleToken.balanceOf(addresses.gaugeDistributor);
@@ -44,6 +46,7 @@ export default task("iip-20", iipDescription)
       .addContractAction(ecosystemFund, "transfer", [addresses.IDLE, addresses.treasuryMultisig, idleAmountToTransfer])
       .addContractAction(idleController, "_withdrawToken", [addresses.IDLE, addresses.gaugeDistributor, idleFromController])
       .addContractAction(idleController, "_setIdleRate", [newIdleControllerRate])
+      .addContractAction(gaugeProxy, "commit_set_admins", [addresses.treasuryMultisig, addresses.devLeagueMultisig]);
 
     // Print and execute proposal
     proposalBuilder.setDescription(iipDescription);
@@ -54,15 +57,21 @@ export default task("iip-20", iipDescription)
     // Skip tests in mainnet
     if (!isLocalNet) {
       return;
-    }    
+    }
     console.log("Checking effects...");
-    
-    // Check that balance is changed on treasury multisig 
+
+    const futureOwnershipAdmin = await gaugeProxy.future_ownership_admin();
+    const futureEmergencyAdmin = await gaugeProxy.future_emergency_admin();
+
+    check(futureOwnershipAdmin === addresses.treasuryMultisig, `Ownership admin for GaugeProxy is correct: ${futureOwnershipAdmin}`)
+    check(futureEmergencyAdmin === addresses.devLeagueMultisig, `Emergency admin for GaugeProxy is correct: ${futureEmergencyAdmin}`)
+
+    // Check that balance is changed on treasury multisig
     const treasuryIdleBalanceAfter = await idleToken.balanceOf(addresses.treasuryMultisig);
     const treasuryIdleBalanceIncrease = treasuryIdleBalanceAfter.sub(treasuryIdleBalanceBefore);
-    check(treasuryIdleBalanceIncrease.eq(idleAmountToTransfer), 
+    check(treasuryIdleBalanceIncrease.eq(idleAmountToTransfer),
       `Treasury balance ${hre.ethers.utils.formatEther(treasuryIdleBalanceBefore)} -> ${hre.ethers.utils.formatEther(treasuryIdleBalanceAfter)} (+ ${hre.ethers.utils.formatEther(treasuryIdleBalanceIncrease)})`);
-    
+
     // Check that balance is changed on gauge Distributor 
     const gaugeIdleBalanceAfter = await idleToken.balanceOf(addresses.gaugeDistributor);
     const distributorIdleBalanceIncrease = gaugeIdleBalanceAfter.sub(gaugeIdleBalanceBefore);
@@ -73,7 +82,7 @@ export default task("iip-20", iipDescription)
     const idleControllerRate = await idleController.idleRate();
     check(idleControllerRate.eq(newIdleControllerRate),
       `IdleController rate changed ${idleControllerRate}`);
-    
+
     const idleDAI = addresses.allIdleTokensBest[0];
     // Check that speed changed for idle tokens
     const daiSpeedAfter = await idleController.idleSpeeds(idleDAI);
