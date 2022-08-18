@@ -43,11 +43,13 @@ export default task("iip-23", iipDescription)
   // total spending will be 1000 * 90 = 90000 IDLE to arrive to Nov 26th + 90k IDLE to extend the distribution period to Feb 26th
   const newIdleControllerRate = toBN('151837230480000000');
   // current distribution is 0.3875 per block so about 2552 IDLE per day, so a total of 2552 * 90 = 229680 IDLE
-  // the difference is about 129000 IDLE that we should in part transfer to the distributor
-  // and in part keep in the controller. In total we should have 180k for BY and 90k to Gauges. So we are short 
-  // by about 40k IDLE that we take from ecosystemFun
-  const idleFromController = toBN(49000).mul(ONE);
-  const idleFromEcosystem = toBN(60000).mul(ONE);
+  // the difference is about 229k - 180k = 49k IDLE that we should transfer to the distributor
+  // In total we should have 180k for BY and 90k to Gauges. So we are short 
+  // by about 40k IDLE that we take from ecosystemFund + ~20k which are already missing
+
+  // we can reduce the duration by 20 days, so we would need 90k + 70k = 160k IDLE for BY and 69k for Gauges 
+  // (+20k missing that will be taken from TL multisig)
+  const idleFromController = toBN(69000).mul(ONE);
 
   const idleController = await hre.ethers.getContractAt(IdleControllerAbi, addresses.idleController);
   const idleToken = await hre.ethers.getContractAt(ERC20_ABI, addresses.IDLE); // idle token    
@@ -64,7 +66,6 @@ export default task("iip-23", iipDescription)
   proposalBuilder = proposalBuilder
     .addContractAction(idleController, "_withdrawToken", [addresses.IDLE, addresses.gaugeDistributor, idleFromController])
     .addContractAction(idleController, "_setIdleRate", [newIdleControllerRate])
-    .addContractAction(ecosystemFund, "transfer", [addresses.IDLE, addresses.gaugeDistributor, idleFromEcosystem])
 
   // Print and execute proposal
   proposalBuilder.setDescription(iipDescription);
@@ -87,7 +88,7 @@ export default task("iip-23", iipDescription)
   // Check that balance is changed on gauge Distributor 
   const gaugeIdleBalanceAfter = await idleToken.balanceOf(addresses.gaugeDistributor);
   const distributorIdleBalanceIncrease = gaugeIdleBalanceAfter.sub(gaugeIdleBalanceBefore);
-  check(distributorIdleBalanceIncrease.eq(idleFromController.add(idleFromEcosystem)),
+  check(distributorIdleBalanceIncrease.eq(idleFromController),
     `Distributor balance ${toEth(gaugeIdleBalanceBefore)} -> ${toEth(gaugeIdleBalanceAfter)} (+ ${toEth(distributorIdleBalanceIncrease)})`);
 
   // check that idleController rate is changed
