@@ -175,5 +175,5 @@ export default task("iip-23", iipDescription)
   const tlMultisigCOMPBalanceAfter = await comp.balanceOf(addresses.treasuryMultisig);
   const tlMultisigIncreaseCOMP = tlMultisigCOMPBalanceAfter.sub(tlMultisigCOMPBalanceBefore);
   check(tlMultisigIncreaseCOMP.eq(compFromTreasury),
-    `TL multisig COMP balance ${toEth(tlMultisigCOMPBalanceBefore)} -> ${toEth(tlMultisigCOMPBalanceAfter)} (+ ${toEth(tlMultisigIncreaseUSDT)})`);
+    `TL multisig COMP balance ${toEth(tlMultisigCOMPBalanceBefore)} -> ${toEth(tlMultisigCOMPBalanceAfter)} (+ ${toEth(tlMultisigIncreaseCOMP)})`);
 });
