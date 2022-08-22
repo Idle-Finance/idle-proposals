@@ -21,9 +21,9 @@ const check = (condition: boolean, message: string) => {
   }
 };
 
-const iipDescription = "IIP-23: Reduce LM for Best Yield to 1000 IDLE/day \n https://gov.idle.finance/t/idle-incentives-distribution-update/1030";
+const iipDescription = "IIP-24: Reduce LM for Best Yield to 1000 IDLE/day \n https://gov.idle.finance/t/idle-incentives-distribution-update/1030";
 
-export default task("iip-23", iipDescription)
+export default task("iip-24", iipDescription)
 .setAction(async (_, hre) => {
   const toEth = (val: any) => hre.ethers.utils.formatEther(val);
   const toToken = (val: any, decimals: any) => toBN(val).div(toBN(+`1e${decimals}`));
