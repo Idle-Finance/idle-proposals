@@ -21,7 +21,7 @@ const check = (condition: boolean, message: string) => {
   }
 };
 
-const iipDescription = "IIP-24: Reduce LM for Best Yield to 1000 IDLE/day \n https://gov.idle.finance/t/idle-incentives-distribution-update/1030";
+const iipDescription = "IIP-24: Reduce LM for Best Yield and Fund restructured leagues \n https://gov.idle.finance/t/iip-24-m3-2022-leagues-budget-and-idle-incentives-distribution-update/1037";
 
 export default task("iip-24", iipDescription)
 .setAction(async (_, hre) => {
