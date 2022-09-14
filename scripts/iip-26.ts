@@ -31,7 +31,7 @@ export default task("iip-26", iipDescription).setAction(async (_, hre) => {
   const allGovTokens = await idleToken.getGovTokens();
   console.log('All gov tokens', allGovTokens);
 
-  const clearPoolWrapper = '0x0c893a7c403f7bB5e1Cae656418A0096Ef558e08';
+  const clearPoolWrapper = '0xdb1b149177b5819cf467ad6519cf55416789300a';
   let protocolTokens = [...(await idleToken.getAPRs())["0"]].map(x => x.toLowerCase())
   let wrappers = []
   let govTokensEqualLength = []
