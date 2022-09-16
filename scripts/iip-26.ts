@@ -95,7 +95,7 @@ export default task("iip-26", iipDescription).setAction(async (_, hre) => {
     console.log('-- govToken: ', govToken);
     newWrappers.push(wrapper);
   };
-  check(newWrappers[newWrappers.length - 1] == clearPoolWrapper, `New wrapper added`);
+  check(newWrappers[newWrappers.length - 1].toLowerCase() == clearPoolWrapper.toLowerCase(), `New wrapper added`);
 
   // Test rebalances
   // All funds in the new protocol

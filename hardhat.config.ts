@@ -65,7 +65,7 @@ const config: HardhatUserConfig = {
       forking: {
         // Ethereum
         url: `https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY}`,
-        blockNumber: 15520181 // iip-26
+        blockNumber: 15546754 // iip-26
         // blockNumber: 15483272 // iip-25
         // blockNumber: 15366158 // iip-24
         // blockNumber: 14590776 // iip-22
