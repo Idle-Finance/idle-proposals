@@ -537,6 +537,10 @@ const fuseFEI = {
   'coverage': '0xd8553552f8868C1Ef160eEdf031cF0BCf9686945',
   'deploy': '0xd8553552f8868C1Ef160eEdf031cF0BCf9686945', // used for truffle Teams deploy, now kovan
 };
+const AA_cpWIN_USDC = {
+  'live': '0xb86264c21418aa75f7c337b1821ccb4ff4d57673',
+  'local': '0xb86264c21418aa75f7c337b1821ccb4ff4d57673',
+};
 const aFEI = {
   'live': '0x683923dB55Fead99A79Fa01A27EeC3cB19679cC3',
   'local': '0x683923dB55Fead99A79Fa01A27EeC3cB19679cC3',
@@ -722,6 +726,7 @@ module.exports = {
   crFEI: crFEI,
   fuseFEI: fuseFEI,
   aFEI: aFEI,
+  AA_cpWIN_USDC,
   idleDAIV4: idleDAIV4,
   idleUSDCV4: idleUSDCV4,
   idleUSDTV4: idleUSDTV4,
@@ -780,7 +785,7 @@ module.exports = {
   governorAlpha: '0x2256b25CFC8E35c3135664FD03E77595042fe31B',
   ecosystemFund: '0xb0aA1f98523Ec15932dd5fAAC5d86e57115571C7',
   vesterFactory: '0xbF875f2C6e4Cc1688dfe4ECf79583193B6089972',
-  whale: '0x47ac0Fb4F2D84898e4D9E7b4DaB3C24507a6D503',
+  whale: '0x99c9fc46f92e8a1c0dec1b1747d010903e884be1',
   SUSDwhale: '0xa5f7a39e55d7878bc5bd754ee5d6bd7a7662355b',
   TUSDwhale: '0xf977814e90da44bfa03b6295a0616a897441acec',
   WETHwhale: '0xe78388b4ce79068e89bf8aa7f218ef6b9ab0e9d0',
