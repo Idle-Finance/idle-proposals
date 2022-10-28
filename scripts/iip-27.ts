@@ -6,6 +6,8 @@ const DISTRIBUTOR_ABI = require("../abi/Distributor.json");
 const addresses = require("../common/addresses")
 const ERC20_ABI = require("../abi/ERC20.json");
 const IdleTokenABI = require("../abi/IdleTokenGovernance.json")
+const PriceOracleV3ABI = require("../abi/PriceOracleV3.json")
+const IDLE_CONTROLLER_ABI = require("../abi/IdleController.json");
 
 const toBN = function (v: any): BigNumber { return BigNumber.from(v.toString()) };
 const ONE = toBN(1e18);
@@ -50,7 +52,11 @@ export default task("iip-27", iipDescription).setAction(async (_, hre) => {
     wrappers.push(wrapper);
     govTokensEqualLength.push(govToken);
   };
-  
+
+  const idleController = await hre.ethers.getContractAt(IDLE_CONTROLLER_ABI, addresses.idleController);
+  const oracleAddr = await idleController.oracle();
+  const oracle = await hre.ethers.getContractAt(PriceOracleV3ABI, oracleAddr);
+
   // add AA_cpFOL_DAI and its wrapper
   protocolTokens = [...protocolTokens, addresses.AA_cpFOL_DAI.live];
   wrappers = [...wrappers, clearPoolWrapper];
@@ -65,6 +71,8 @@ export default task("iip-27", iipDescription).setAction(async (_, hre) => {
     govTokens,
     govTokensEqualLength
   ])
+  .addContractAction(oracle, "setBlocksPerYear", [toBN('2628333')]);
+
   
   // Print and execute proposal
   proposalBuilder.setDescription(iipDescription);
@@ -98,6 +106,8 @@ export default task("iip-27", iipDescription).setAction(async (_, hre) => {
     newWrappers.push(wrapper);
   };
   check(newWrappers[newWrappers.length - 1].toLowerCase() == clearPoolWrapper.toLowerCase(), `New wrapper added`);
+
+  check(toBN(await oracle.blocksPerYear()).eq(toBN(2628333)), 'Block per year');
 
   // Test rebalances
   // All funds in the new protocol
