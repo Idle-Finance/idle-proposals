@@ -71,7 +71,9 @@ export default task("iip-27", iipDescription).setAction(async (_, hre) => {
     govTokens,
     govTokensEqualLength
   ])
-  .addContractAction(oracle, "setBlocksPerYear", [toBN('2628333')]);
+  .addContractAction(oracle, "setBlocksPerYear", [toBN('2628333')])
+  .addContractAction(oracle, "updateFeedETH", [addresses.stkAAVE.live, addresses.addr0])
+  .addContractAction(oracle, "updateFeedUSD", [addresses.stkAAVE.live, addresses.addr0]);
 
   
   // Print and execute proposal
@@ -108,6 +110,9 @@ export default task("iip-27", iipDescription).setAction(async (_, hre) => {
   check(newWrappers[newWrappers.length - 1].toLowerCase() == clearPoolWrapper.toLowerCase(), `New wrapper added`);
 
   check(toBN(await oracle.blocksPerYear()).eq(toBN(2628333)), 'Block per year');
+  check(toBN(await oracle.getStkAaveApr(addresses.aDAIV2.live, addresses.DAI.live)).eq(toBN(0)), 'stkAAVE apr aDAI');
+  check(toBN(await oracle.getStkAaveApr(addresses.aUSDCV2.live, addresses.USDC.live)).eq(toBN(0)), 'stkAAVE apr aUSDC');
+  check(toBN(await oracle.getStkAaveApr(addresses.aUSDTV2.live, addresses.USDT.live)).eq(toBN(0)), 'stkAAVE apr aUSDT');
 
   // Test rebalances
   // All funds in the new protocol
