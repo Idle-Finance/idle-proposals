@@ -19,7 +19,7 @@ const check = (condition: boolean, message: string) => {
   }
 };
 
-const iipDescription = "IIP-27: Add senior tranche of cpFOL-USDC (DAI) PYT as new yield source for idleDAI Best Yield \n";
+const iipDescription = "IIP-27: Add senior tranche of cpFOL-USDC (DAI) PYT as new yield source for idleDAI Best Yield \n https://gov.idle.finance/t/iip-27-clearpool-pyts-as-a-new-yield-source-for-by-folkvang/1079";
 
 export default task("iip-27", iipDescription).setAction(async (_, hre) => {
   const toEth = (val: any) => hre.ethers.utils.formatEther(val);
