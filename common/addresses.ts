@@ -541,6 +541,10 @@ const AA_cpWIN_USDC = {
   'live': '0xb86264c21418aa75f7c337b1821ccb4ff4d57673',
   'local': '0xb86264c21418aa75f7c337b1821ccb4ff4d57673',
 };
+const AA_cpFOL_DAI = {
+  'live': '0x1692F6574a6758ADfbD12544e209146dD4510BD7',
+  'local': '0x1692F6574a6758ADfbD12544e209146dD4510BD7',
+};
 const aFEI = {
   'live': '0x683923dB55Fead99A79Fa01A27EeC3cB19679cC3',
   'local': '0x683923dB55Fead99A79Fa01A27EeC3cB19679cC3',
@@ -727,6 +731,7 @@ module.exports = {
   fuseFEI: fuseFEI,
   aFEI: aFEI,
   AA_cpWIN_USDC,
+  AA_cpFOL_DAI,
   idleDAIV4: idleDAIV4,
   idleUSDCV4: idleUSDCV4,
   idleUSDTV4: idleUSDTV4,
