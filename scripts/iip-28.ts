@@ -19,7 +19,7 @@ const check = (condition: boolean, message: string) => {
   }
 };
 
-const iipDescription = "IIP-28: Update idleDAI wrapper for cpFOL-USDC (DAI) senior tranche and idleUSDC wrapper for cpWIN-USDC to fix availableLiquidity";
+const iipDescription = "IIP-28: Update idleDAI wrapper for cpFOL-USDC (DAI) senior tranche and idleUSDC wrapper for cpWIN-USDC to fix availableLiquidity \n https://gov.idle.finance/t/iip-28-update-by-wrapper-contracts/1087";
 
 export default task("iip-28", iipDescription).setAction(async (_, hre) => {
   _hre = hre;
