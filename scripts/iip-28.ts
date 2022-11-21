@@ -42,7 +42,7 @@ export default task("iip-28", iipDescription).setAction(async (_, hre) => {
   const clearPoolWrapperUSDC = '0xFF12A5eaE3E60096c774AD7211AE5C0c5b5Cc0F5';
 
   const paramDAI = await getParamsForSetAll(idleToken, clearPoolWrapper, hre);
-  // const paramUSDC = await getParamsForSetAll(idleTokenUSDC, clearPoolWrapperUSDC, hre);
+  const paramUSDC = await getParamsForSetAll(idleTokenUSDC, clearPoolWrapperUSDC, hre);
   
   let proposalBuilder = hre.proposals.builders.alpha();
   proposalBuilder = proposalBuilder.addContractAction(idleToken, "setAllAvailableTokensAndWrappers", [
@@ -51,13 +51,12 @@ export default task("iip-28", iipDescription).setAction(async (_, hre) => {
     paramDAI.govTokens,
     paramDAI.govTokensEqualLength
   ])
-  // proposalBuilder = proposalBuilder.addContractAction(idleTokenUSDC, "setAllAvailableTokensAndWrappers", [
-  // .addContractAction(idleTokenUSDC, "setAllAvailableTokensAndWrappers", [
-  //   paramUSDC.protocolTokens,
-  //   paramUSDC.wrappers,
-  //   paramUSDC.govTokens,
-  //   paramUSDC.govTokensEqualLength
-  // ])
+  .addContractAction(idleTokenUSDC, "setAllAvailableTokensAndWrappers", [
+    paramUSDC.protocolTokens,
+    paramUSDC.wrappers,
+    paramUSDC.govTokens,
+    paramUSDC.govTokensEqualLength
+  ])
   
   // Print and execute proposal
   proposalBuilder.setDescription(iipDescription);
@@ -72,9 +71,7 @@ export default task("iip-28", iipDescription).setAction(async (_, hre) => {
   console.log("Checking effects...");
 
   await checkEffects(idleToken, allGovTokens, clearPoolWrapper, addresses.AA_cpFOL_DAI.live.toLowerCase(), hre);
-  // await checkEffects(idleTokenUSDC, allGovTokensUSDC, clearPoolWrapperUSDC, addresses.AA_cpWIN_USDC.live.toLowerCase(), hre);
-
-  // TODO check full rebalance with low liquidity on clearpool
+  await checkEffects(idleTokenUSDC, allGovTokensUSDC, clearPoolWrapperUSDC, addresses.AA_cpWIN_USDC.live.toLowerCase(), hre);
 });
 
 const getParamsForSetAll = async (idleToken: any, newWrapper: any, hre: any) => {
