@@ -111,12 +111,12 @@ export default task("iip-29", iipDescription).setAction(async (_, hre) => {
   check(!(await idleController.markets(addresses.idleSUSDV4)).isIdled, `idleSUSDV4 removed`);
   check(!(await idleController.markets(addresses.idleTUSDV4)).isIdled, `idleTUSDV4 removed`);
 
-  // // Test rebalances
-  // // All funds in the new protocol
-  // let allocations = newProtocolTokens.map((_, i) => i == newProtocolTokens.length - 1 ? 100000 : 0);
-  // await hre.run("test-idle-token", { idleToken, allocations })
+  // Test rebalances
+  // All funds in the new protocol
+  let allocations = newProtocolTokens.map((_, i) => i == newProtocolTokens.length - 1 ? 100000 : 0);
+  await hre.run("test-idle-token", { idleToken, allocations })
 
-  // // All funds in the first protocol
-  // allocations = newProtocolTokens.map((_, i) => i == 0 ? 100000 : 0);
-  // await hre.run("test-idle-token", { idleToken, allocations })
+  // All funds in the first protocol
+  allocations = newProtocolTokens.map((_, i) => i == 0 ? 100000 : 0);
+  await hre.run("test-idle-token", { idleToken, allocations })
 });
