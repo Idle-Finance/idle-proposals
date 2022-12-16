@@ -1,12 +1,9 @@
 import { task } from "hardhat/config"
 import { BigNumber } from "ethers";
-import { AlphaProposalBuilder } from "@idle-finance/hardhat-proposals-plugin/dist/src/proposals/compound-alpha";
 
-const DISTRIBUTOR_ABI = require("../abi/Distributor.json");
 const addresses = require("../common/addresses")
 const ERC20_ABI = require("../abi/ERC20.json");
 const IdleTokenABI = require("../abi/IdleTokenGovernance.json")
-const PriceOracleV3ABI = require("../abi/PriceOracleV3.json")
 const IDLE_CONTROLLER_ABI = require("../abi/IdleController.json");
 const GovernorBravoDelegateABI = require("../abi/GovernorBravoDelegate.json");
 
@@ -20,7 +17,7 @@ const check = (condition: boolean, message: string) => {
   }
 };
 
-const iipDescription = "IIP-29: Add idleDAI wrapper for rWIN-USDC (DAI) senior tranche. Remove idleRAI, idleSUSD, idleTUSD and idleFEI from IdleController. \n https://gov.idle.finance/t/strategies-revamp-unused-assets-wind-down-ii/1090";
+const iipDescription = "IIP-29: Remove idleDAI wrapper for cpFOL-USDC (DAI) senior. Same for idleUSDC with cpWIN-USDC. Remove idleRAI, idleSUSD, idleTUSD and idleFEI from IdleController. Update voting delay in Governor \n ";
 
 export default task("iip-29", iipDescription).setAction(async (_, hre) => {
   const toEth = (val: any) => hre.ethers.utils.formatEther(val);
@@ -28,91 +25,63 @@ export default task("iip-29", iipDescription).setAction(async (_, hre) => {
   const isLocalNet = hre.network.name == 'hardhat';
   
   const newVotingDelay = toBN(100);
-  
-  // ################ ribbon wintermute DAI addition in idleDAI
-  const idleToken = await hre.ethers.getContractAt(IdleTokenABI, addresses.idleDAIV4);
-  const idleTokenName = await idleToken.name();
-  console.log(`📄 adding proposal action for ${idleTokenName}`);
 
-  const allGovTokens = await idleToken.getGovTokens();
-  console.log('All gov tokens', allGovTokens);
-  const clearPoolWrapper = '0x75DA360514532813B460b2Ba30F444A1fa28c9d7';
-  const newProtocolToken = addresses.AA_rWIN_DAI.live;
-  let protocolTokens = [...(await idleToken.getAPRs())["0"]].map(x => x.toLowerCase())
-  let wrappers = []
-  let govTokensEqualLength = []
-  let govTokens = [];
-
-  console.log(protocolTokens)
-  for (var i = 0; i < protocolTokens.length; i++) {
-    const token = await hre.ethers.getContractAt(ERC20_ABI, protocolTokens[i]);
-    const wrapper = await idleToken.protocolWrappers(token.address);
-    console.log(await token.name(), token.address, " => ", wrapper);
-
-    const govToken = await idleToken.getProtocolTokenToGov(token.address)
-    if (govToken.toLowerCase() != addresses.addr0.toLowerCase()) {
-      govTokens.push(govToken);
-    }
-    wrappers.push(wrapper);
-    govTokensEqualLength.push(govToken);
-  };
-
-  // add new protocol token and its wrapper
-  protocolTokens = [...protocolTokens, newProtocolToken];
-  wrappers = [...wrappers, clearPoolWrapper];
-  govTokensEqualLength = [...govTokensEqualLength, addresses.addr0];
-  // add IDLE distribution
-  govTokens.push(addresses.IDLE);
-
-  // ################ clearpool wintermute USDC remove in idleUSDC
-  const idleTokenUSDC = await hre.ethers.getContractAt(IdleTokenABI, addresses.idleUSDCV4);
-  const idleTokenNameUSDC = await idleTokenUSDC.name();
-  console.log(`📄 adding proposal action for ${idleTokenNameUSDC}`);
-
-  const allGovTokensUSDC = await idleTokenUSDC.getGovTokens();
-  console.log('All gov tokens USDC', allGovTokensUSDC);
-  const toRemove = addresses.AA_cpWIN_USDC.live;
-  let allProtocolTokensUSDC = [...(await idleTokenUSDC.getAPRs())["0"]].map(x => x.toLowerCase())
-  let protocolTokensUSDC = []
-  let wrappersUSDC = []
-  let govTokensEqualLengthUSDC = []
-  let govTokensUSDC = [];
-
-  console.log(allProtocolTokensUSDC)
-  // loop until allProtocolTokensUSDC.length - 2 so to remove last protocol
-  for (var i = 0; i < allProtocolTokensUSDC.length - 1; i++) {
-    const token = await hre.ethers.getContractAt(ERC20_ABI, allProtocolTokensUSDC[i]);
-    const wrapper = await idleTokenUSDC.protocolWrappers(token.address);
-    console.log(await token.name(), token.address, " => ", wrapper);
+  const getParamsRemoveLast = async (idleTokenAddr: any) => {
+    const idleToken = await hre.ethers.getContractAt(IdleTokenABI, idleTokenAddr);
+    const idleTokenName = await idleToken.name();
+    console.log(`📄 adding proposal action for ${idleTokenName}`);
     
-    const govToken = await idleTokenUSDC.getProtocolTokenToGov(token.address)
-    if (govToken.toLowerCase() != addresses.addr0.toLowerCase()) {
-      govTokensUSDC.push(govToken);
-    }
-    protocolTokensUSDC.push(allProtocolTokensUSDC[i]);
-    wrappersUSDC.push(wrapper);
-    govTokensEqualLengthUSDC.push(govToken);
-  };
+    const allGovTokens = await idleToken.getGovTokens();
+    console.log('All gov tokens ', allGovTokens);
+    let allProtocolTokens = [...(await idleToken.getAPRs())["0"]].map(x => x.toLowerCase())
+    let protocolTokens = []
+    let wrappers = []
+    let govTokensEqualLength = []
+    let govTokens = [];
+    
+    console.log(allProtocolTokens)
+    // loop until allProtocolTokens.length - 2 so to remove last protocol
+    for (var i = 0; i < allProtocolTokens.length - 1; i++) {
+      const token = await hre.ethers.getContractAt(ERC20_ABI, allProtocolTokens[i]);
+      const wrapper = await idleToken.protocolWrappers(token.address);
+      console.log(await token.name(), token.address, " => ", wrapper);
+      
+      const govToken = await idleToken.getProtocolTokenToGov(token.address)
+      if (govToken.toLowerCase() != addresses.addr0.toLowerCase()) {
+        govTokens.push(govToken);
+      }
+      protocolTokens.push(allProtocolTokens[i]);
+      wrappers.push(wrapper);
+      govTokensEqualLength.push(govToken);
+    };
+    
+    // add IDLE distribution
+    govTokens.push(addresses.IDLE);
+    return { 
+      // params for proposal
+      protocolTokens, wrappers, govTokensEqualLength, govTokens, 
+      // current params
+      idleToken, allProtocolTokens, allGovTokens
+    };
+  }
 
-  // add IDLE distribution
-  govTokensUSDC.push(addresses.IDLE);
-  // ################ end of clearpool wintermute USDC remove in idleUSDC
-  
+  const paramDAI = await getParamsRemoveLast(addresses.idleDAIV4);
+  const paramUSDC = await getParamsRemoveLast(addresses.idleUSDCV4);
+
   const idleController = await hre.ethers.getContractAt(IDLE_CONTROLLER_ABI, addresses.idleController);
   const governorBravo = await hre.ethers.getContractAt(GovernorBravoDelegateABI, addresses.governorBravo);
-  console.log({ protocolTokensUSDC })
   const proposal = hre.proposals.builders.alpha()
-    .addContractAction(idleToken, "setAllAvailableTokensAndWrappers", [
-      protocolTokens,
-      wrappers,
-      govTokens,
-      govTokensEqualLength
+    .addContractAction(paramDAI.idleToken, "setAllAvailableTokensAndWrappers", [
+      paramDAI.protocolTokens,
+      paramDAI.wrappers,
+      paramDAI.govTokens,
+      paramDAI.govTokensEqualLength
     ])
-    .addContractAction(idleTokenUSDC, "setAllAvailableTokensAndWrappers", [
-      protocolTokensUSDC,
-      wrappersUSDC,
-      govTokensUSDC,
-      govTokensEqualLengthUSDC
+    .addContractAction(paramUSDC.idleToken, "setAllAvailableTokensAndWrappers", [
+      paramUSDC.protocolTokens,
+      paramUSDC.wrappers,
+      paramUSDC.govTokens,
+      paramUSDC.govTokensEqualLength
     ])
     .addContractAction(idleController, "_dropIdleMarket", [addresses.idleFEIV4])
     .addContractAction(idleController, "_dropIdleMarket", [addresses.idleRAIV4])
@@ -131,67 +100,42 @@ export default task("iip-29", iipDescription).setAction(async (_, hre) => {
   }
   console.log("Checking effects...");
 
-  const newGovTokens = await idleToken.getGovTokens();
-  console.log('newGovTokens', newGovTokens);
-  check(newGovTokens.length == allGovTokens.length, `Gov tokens length did not change`);
+  const checkEffects = async (idleToken: any, allGovTokens: any, allProtocolTokens: any) => {
+    const newGovTokens = await idleToken.getGovTokens();
+    console.log('newGovTokens', newGovTokens);
+    check(newGovTokens.length == allGovTokens.length, `Gov tokens length did not change`);
 
-  let newProtocolTokens = [...(await idleToken.getAPRs())["0"]].map(x => x.toLowerCase());
-  console.log('newProtocolTokens', newProtocolTokens);
-  check(newProtocolTokens[newProtocolTokens.length - 1].toLowerCase() == newProtocolToken.toLowerCase(),
-    `New token added is correct`);
+    let newProtocolTokens = [...(await idleToken.getAPRs())["0"]].map(x => x.toLowerCase());
+    console.log('newProtocolTokens', newProtocolTokens);
+    check(newProtocolTokens.length == (allProtocolTokens.length - 1), `token removed`);
 
-  const newGovTokensUSDC = await idleTokenUSDC.getGovTokens();
-  console.log('newGovTokensUSDC', newGovTokensUSDC);
-  check(newGovTokensUSDC.length == allGovTokensUSDC.length, `Gov tokens length did not change`);
+    const newWrappers = [];
+    for (var i = 0; i < newProtocolTokens.length; i++) {
+      const token = await hre.ethers.getContractAt(ERC20_ABI, newProtocolTokens[i]);
+      const wrapper = await idleToken.protocolWrappers(token.address);
+      console.log(await token.name(), token.address, " => ", wrapper);
 
-  let newProtocolTokensUSDC = [...(await idleTokenUSDC.getAPRs())["0"]].map(x => x.toLowerCase());
-  console.log('newProtocolTokensUSDC', newProtocolTokensUSDC);
-  check(newProtocolTokensUSDC.length == (allProtocolTokensUSDC.length - 1),
-    `token removed`);
+      const govToken = await idleToken.getProtocolTokenToGov(token.address)
+      console.log('-- govToken: ', govToken);
+      newWrappers.push(wrapper);
+    };
 
-  const newWrappers = [];
-  for (var i = 0; i < newProtocolTokens.length; i++) {
-    const token = await hre.ethers.getContractAt(ERC20_ABI, newProtocolTokens[i]);
-    const wrapper = await idleToken.protocolWrappers(token.address);
-    console.log(await token.name(), token.address, " => ", wrapper);
+    // Test rebalances 
+    // All funds in the last protocol
+    let allocations = newProtocolTokens.map((_, i) => i == newProtocolTokens.length - 1 ? 100000 : 0);
+    await hre.run("test-idle-token", { idleToken: idleToken, allocations: allocations })
 
-    const govToken = await idleToken.getProtocolTokenToGov(token.address)
-    console.log('-- govToken: ', govToken);
-    newWrappers.push(wrapper);
-  };
+    // All funds in the first protocol
+    allocations = newProtocolTokens.map((_, i) => i == 0 ? 100000 : 0);
+    await hre.run("test-idle-token", { idleToken: idleToken, allocations: allocations })
+  }
 
-  const newWrappersUSDC = [];
-  for (var i = 0; i < newProtocolTokensUSDC.length; i++) {
-    const token = await hre.ethers.getContractAt(ERC20_ABI, newProtocolTokensUSDC[i]);
-    const wrapper = await idleTokenUSDC.protocolWrappers(token.address);
-    console.log(await token.name(), token.address, " => ", wrapper);
-
-    const govToken = await idleTokenUSDC.getProtocolTokenToGov(token.address)
-    console.log('-- govToken: ', govToken);
-    newWrappersUSDC.push(wrapper);
-  };
+  await checkEffects(paramDAI.idleToken, paramDAI.allGovTokens, paramDAI.allProtocolTokens);
+  await checkEffects(paramUSDC.idleToken, paramUSDC.allGovTokens, paramUSDC.allProtocolTokens);
 
   check(!(await idleController.markets(addresses.idleFEIV4)).isIdled, `idleFEIV4 removed`);
   check(!(await idleController.markets(addresses.idleRAIV4)).isIdled, `idleRAIV4 removed`);
   check(!(await idleController.markets(addresses.idleSUSDV4)).isIdled, `idleSUSDV4 removed`);
   check(!(await idleController.markets(addresses.idleTUSDV4)).isIdled, `idleTUSDV4 removed`);
   check(toBN(await governorBravo.votingDelay()).eq(newVotingDelay), `Voting delay updated`);
-
-  // Test rebalances
-  // All funds in the new protocol
-  let allocations = newProtocolTokens.map((_, i) => i == newProtocolTokens.length - 1 ? 100000 : 0);
-  await hre.run("test-idle-token", { idleToken, allocations })
-
-  // All funds in the first protocol
-  allocations = newProtocolTokens.map((_, i) => i == 0 ? 100000 : 0);
-  await hre.run("test-idle-token", { idleToken, allocations })
-
-  // Test rebalances USDC
-  // All funds in the last protocol
-  let allocationsUSDC = newProtocolTokensUSDC.map((_, i) => i == newProtocolTokensUSDC.length - 1 ? 100000 : 0);
-  await hre.run("test-idle-token", { idleToken: idleTokenUSDC, allocations: allocationsUSDC })
-  
-  // All funds in the first protocol
-  allocationsUSDC = newProtocolTokensUSDC.map((_, i) => i == 0 ? 100000 : 0);
-  await hre.run("test-idle-token", { idleToken: idleTokenUSDC, allocations: allocationsUSDC })
 });
