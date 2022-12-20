@@ -17,7 +17,7 @@ const check = (condition: boolean, message: string) => {
   }
 };
 
-const iipDescription = "IIP-29: Remove idleDAI wrapper for cpFOL-USDC (DAI) senior. Same for idleUSDC with cpWIN-USDC. Remove idleRAI, idleSUSD, idleTUSD and idleFEI from IdleController. Update voting delay in Governor \n ";
+const iipDescription = "IIP-29: Remove idleDAI wrapper for cpFOL-USDC (DAI) senior. Same for idleUSDC with cpWIN-USDC. Remove idleRAI, idleSUSD, idleTUSD and idleFEI from IdleController. Update voting delay in Governor \n https://gov.idle.finance/t/iip-29-assets-by-delisting-by-yield-sources-update-governor-update/1096";
 
 export default task("iip-29", iipDescription).setAction(async (_, hre) => {
   const toEth = (val: any) => hre.ethers.utils.formatEther(val);
