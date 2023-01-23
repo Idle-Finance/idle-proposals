@@ -549,6 +549,18 @@ const AA_rWIN_DAI = {
   'live': '0xd54E5C263298E60A5030Ce2C8ACa7981EaAaED4A',
   'local': '0xd54E5C263298E60A5030Ce2C8ACa7981EaAaED4A',
 };
+const AA_eUSDTStaking = {
+  'live': '0x6796FCd41e4fb26855Bb9BDD7Cad41128Da1Fd59',
+  'local': '0x6796FCd41e4fb26855Bb9BDD7Cad41128Da1Fd59',
+};
+const AA_eUSDCStaking = {
+  'live': '0x1AF0294524093BFdF5DA5135853dC2fC678C12f7',
+  'local': '0x1AF0294524093BFdF5DA5135853dC2fC678C12f7',
+};
+const AA_eWETHStaking = {
+  'live': '0x2B7Da260F101Fb259710c0a4f2EfEf59f41C0810',
+  'local': '0x2B7Da260F101Fb259710c0a4f2EfEf59f41C0810',
+};
 const aFEI = {
   'live': '0x683923dB55Fead99A79Fa01A27EeC3cB19679cC3',
   'local': '0x683923dB55Fead99A79Fa01A27EeC3cB19679cC3',
@@ -737,6 +749,9 @@ module.exports = {
   AA_cpWIN_USDC,
   AA_cpFOL_DAI,
   AA_rWIN_DAI,
+  AA_eUSDTStaking,
+  AA_eUSDCStaking,
+  AA_eWETHStaking,
   idleDAIV4: idleDAIV4,
   idleUSDCV4: idleUSDCV4,
   idleUSDTV4: idleUSDTV4,
@@ -798,7 +813,7 @@ module.exports = {
   whale: '0x99c9fc46f92e8a1c0dec1b1747d010903e884be1',
   SUSDwhale: '0xa5f7a39e55d7878bc5bd754ee5d6bd7a7662355b',
   TUSDwhale: '0xf977814e90da44bfa03b6295a0616a897441acec',
-  WETHwhale: '0xe78388b4ce79068e89bf8aa7f218ef6b9ab0e9d0',
+  WETHwhale: '0x8EB8a3b98659Cce290402893d0123abb75E3ab28',
   WBTCwhale: '0xe78388b4ce79068e89bf8aa7f218ef6b9ab0e9d0',
   RAIwhale: '0xeb2629a2734e272bcc07bda959863f316f4bd4cf',
   FEIwhale: '0xbc9c084a12678ef5b516561df902fdc426d95483',

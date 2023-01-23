@@ -18,7 +18,7 @@ export default task("test-idle-token", "Test an idleToken by doing a rebalance",
 
     let unlent = args.unlent || 0;
     let account = args.account || accounts[0];
-    let whale = args.whale || addresses.whale;
+    let whale = args.whale;
     let idleToken = args.idleToken.connect(rebalancer)
     let allocations = args.allocations;
 
