@@ -27,7 +27,7 @@ const checkAlmostEqual = (a: any, b: any, tolerance: any, message: any) => {
   }
 }
 
-const iipDescription = "IIP-31: Add AA Euler staking PYT wrappers to IdleUSDT, IdleUSDC and IdleWETH. Set Gauges rate to 0. Extend LM (IdleController) for 3 months at half rate.";
+const iipDescription = "IIP-31: Add AA Euler staking PYT wrappers to IdleUSDT, IdleUSDC and IdleWETH. Gauges rate to 0. Extend LM. https://gov.idle.finance/t/iip-31-idle-incentives-distribution-update-euler-staking-pyts-as-new-yield-sources-for-by/1107";
 
 export default task("iip-31", iipDescription).setAction(async (_, hre) => {
   _hre = hre;
