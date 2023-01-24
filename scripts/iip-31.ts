@@ -104,8 +104,10 @@ export default task("iip-31", iipDescription).setAction(async (_, hre) => {
       newControllerRate
     ])
   
-  // call refreshIdleSpeeds of idleController manually to update speeds
-  await idleController.refreshIdleSpeeds();
+  if (isLocalNet) {
+    // call refreshIdleSpeeds of idleController manually to update speeds
+    await idleController.refreshIdleSpeeds();
+  }
 
   // get idleDAI, idleUSDC and idleUSDT speeds from controller before proposal
   const idleDAISpeedBefore = await idleController.idleSpeeds(addresses.idleDAIV4);
