@@ -553,6 +553,10 @@ const AA_eUSDTStaking = {
   'live': '0x6796FCd41e4fb26855Bb9BDD7Cad41128Da1Fd59',
   'local': '0x6796FCd41e4fb26855Bb9BDD7Cad41128Da1Fd59',
 };
+const AA_eDAIStaking = {
+  'live': '0x62Eb6a8c7A555eae3e0B17D42CA9A3299af2787E',
+  'local': '0x62Eb6a8c7A555eae3e0B17D42CA9A3299af2787E',
+};
 const AA_eUSDCStaking = {
   'live': '0x1AF0294524093BFdF5DA5135853dC2fC678C12f7',
   'local': '0x1AF0294524093BFdF5DA5135853dC2fC678C12f7',
@@ -750,6 +754,7 @@ module.exports = {
   AA_cpFOL_DAI,
   AA_rWIN_DAI,
   AA_eUSDTStaking,
+  AA_eDAIStaking,
   AA_eUSDCStaking,
   AA_eWETHStaking,
   idleDAIV4: idleDAIV4,
