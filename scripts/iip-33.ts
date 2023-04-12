@@ -27,7 +27,7 @@ const checkAlmostEqual = (a: any, b: any, tolerance: any, message: any) => {
   }
 }
 
-const iipDescription = "IIP-33: Replace Euler staking PYT wrappers with Clearpool portofino (AA tranche) for IdleDAI";
+const iipDescription = "IIP-33: Replace Euler staking PYT wrappers with Clearpool portofino (AA tranche) for IdleDAI https://gov.idle.finance/t/clearpool-yts-as-a-new-yield-source-for-dai-by-portofino/1144";
 
 export default task("iip-33", iipDescription).setAction(async (_, hre) => {
   _hre = hre;
