@@ -27,6 +27,7 @@ import "./scripts/iip-31"
 import "./scripts/iip-32"
 import "./scripts/iip-33"
 import "./scripts/iip-34"
+import "./scripts/iip-35"
 import "./scripts/iip-upgrade"
 import "./scripts/utilities"
 import "./scripts/test-idle-token"
@@ -73,7 +74,8 @@ const config: HardhatUserConfig = {
       forking: {
         // Ethereum
         url: `https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY}`,
-        blockNumber: 17086851 // iip-34
+        blockNumber: 17187708 // iip-35
+        // blockNumber: 17088152 // iip-34
         // blockNumber: 17024100 // iip-33
         // blockNumber: 16642112 // iip-32
         // blockNumber: 16468596 // iip-31

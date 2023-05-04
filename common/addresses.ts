@@ -561,6 +561,14 @@ const AA_cpPOR_DAI = {
   'live': '0x43eD68703006add5F99ce36b5182392362369C1c',
   'local': '0x43eD68703006add5F99ce36b5182392362369C1c',
 };
+const AA_cpPOR_USDC = {
+  'live': '0x9CAcd44cfDf22731bc99FaCf3531C809d56BD4A2',
+  'local': '0x9CAcd44cfDf22731bc99FaCf3531C809d56BD4A2',
+};
+const AA_cpFAS_USDT = {
+  'live': '0x0a6f2449C09769950cFb76f905Ad11c341541f70',
+  'local': '0x0a6f2449C09769950cFb76f905Ad11c341541f70',
+};
 const AA_eUSDCStaking = {
   'live': '0x1AF0294524093BFdF5DA5135853dC2fC678C12f7',
   'local': '0x1AF0294524093BFdF5DA5135853dC2fC678C12f7',
@@ -762,6 +770,8 @@ module.exports = {
   AA_eUSDCStaking,
   AA_eWETHStaking,
   AA_cpPOR_DAI,
+  AA_cpPOR_USDC,
+  AA_cpFAS_USDT,
   idleDAIV4: idleDAIV4,
   idleUSDCV4: idleUSDCV4,
   idleUSDTV4: idleUSDTV4,

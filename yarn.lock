@@ -534,10 +534,10 @@
     "@gnosis.pm/safe-deployments" "^1.0.0"
     axios "^0.21.1"
 
-"@idle-finance/hardhat-proposals-plugin@^0.2.3":
-  version "0.2.3"
-  resolved "https://registry.npmjs.org/@idle-finance/hardhat-proposals-plugin/-/hardhat-proposals-plugin-0.2.3.tgz"
-  integrity sha512-vzBIF0jDY2UhEhWDu11xJgrIMgFB1KrtMpP3awfhdIJ3HZbMXNsfvC0/qPJS2ZNu4k0VII4vpmYalkbBAxHsuQ==
+"@idle-finance/hardhat-proposals-plugin@^0.2.5":
+  version "0.2.5"
+  resolved "https://registry.yarnpkg.com/@idle-finance/hardhat-proposals-plugin/-/hardhat-proposals-plugin-0.2.5.tgz#7b6e0e1c0afd4035cc54ee5d505161c65eb93457"
+  integrity sha512-E6u2hx6nnOfGHDnI5JG0qtb+bdJDxJCbRkENbL7VioBhvgEYmjevvI36YXBoVvG0mGV2jG3QnyEJ2HedZ8LudA==
 
 "@ledgerhq/cryptoassets@^5.47.1":
   version "5.53.0"
