@@ -83,19 +83,10 @@ export default task("iip-35", iipDescription).setAction(async (_, hre) => {
   const susdFromCollector = await susd.balanceOf(addresses.feeCollector);
 
   const stkAAVEFromTreasury = await stkAAVE.balanceOf(addresses.feeTreasury);
-  const wethFromTreasury = await weth.balanceOf(addresses.feeTreasury);
+  const wethFromTreasury = toBN(3*1e18);
   const usdtFromTreasury = await usdt.balanceOf(addresses.feeTreasury);
   const usdcFromTreasury = await usdc.balanceOf(addresses.feeTreasury);
 
-  // console.log('balances', {
-  //   stkAAVEFromCollector: stkAAVEFromCollector.toString(),
-  //   raifromCollector: raifromCollector.toString(),
-  //   susdFromCollector: susdFromCollector.toString(),
-  //   stkAAVEFromTreasury: stkAAVEFromTreasury.toString(),
-  //   wethFromTreasury: wethFromTreasury.toString(),
-  //   usdtFromTreasury: usdtFromTreasury.toString(),
-  //   usdcFromTreasury: usdcFromTreasury.toString(),
-  // })
   // Get balances for tests
   const tlMultisigWethBalanceBefore = await weth.balanceOf(addresses.treasuryMultisig);
   const tlMultisigAAVEBalanceBefore = await stkAAVE.balanceOf(addresses.treasuryMultisig);
