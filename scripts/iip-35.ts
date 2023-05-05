@@ -83,7 +83,7 @@ export default task("iip-35", iipDescription).setAction(async (_, hre) => {
   const susdFromCollector = await susd.balanceOf(addresses.feeCollector);
 
   const stkAAVEFromTreasury = await stkAAVE.balanceOf(addresses.feeTreasury);
-  const wethFromTreasury = toBN(3*1e18);
+  const wethFromTreasury = await weth.balanceOf(addresses.feeTreasury);
   const usdtFromTreasury = await usdt.balanceOf(addresses.feeTreasury);
   const usdcFromTreasury = await usdc.balanceOf(addresses.feeTreasury);
 
