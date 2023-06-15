@@ -569,6 +569,10 @@ const AA_cpFAS_USDT = {
   'live': '0x0a6f2449C09769950cFb76f905Ad11c341541f70',
   'local': '0x0a6f2449C09769950cFb76f905Ad11c341541f70',
 };
+const AA_cpFAS_USDC = {
+  'live': '0xdcA1daE87f5c733c84e0593984967ed756579BeE',
+  'local': '0xdcA1daE87f5c733c84e0593984967ed756579BeE',
+};
 const AA_eUSDCStaking = {
   'live': '0x1AF0294524093BFdF5DA5135853dC2fC678C12f7',
   'local': '0x1AF0294524093BFdF5DA5135853dC2fC678C12f7',
@@ -772,6 +776,7 @@ module.exports = {
   AA_cpPOR_DAI,
   AA_cpPOR_USDC,
   AA_cpFAS_USDT,
+  AA_cpFAS_USDC,
   idleDAIV4: idleDAIV4,
   idleUSDCV4: idleUSDCV4,
   idleUSDTV4: idleUSDTV4,
