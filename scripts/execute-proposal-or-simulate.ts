@@ -27,7 +27,7 @@ export default task("execute-proposal-or-simulate", "Test an idleToken by doing 
     } else {
       console.log('Posting proposal on-chain with Dev League Multisig');
       const ledgerSigner = new LedgerSigner(hre.ethers.provider, undefined, "m/44'/60'/0'/0/0");
-      const service = new SafeService('https://safe-transaction.gnosis.io/');
+      const service = new SafeService('https://safe-transaction-mainnet.safe.global/');
       const signer = await SafeEthersSigner.create(addresses.devLeagueMultisig, ledgerSigner, service, hre.ethers.provider);
       proposal.setProposer(signer);
       await proposal.propose();
