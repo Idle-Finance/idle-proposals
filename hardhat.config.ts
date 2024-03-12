@@ -74,12 +74,11 @@ const config: HardhatUserConfig = {
   },
   networks: {
     hardhat: {
-      loggingEnabled: true,
       forking: {
         // Ethereum
         // url: `https://mainnet.infura.io/v3/${process.env.INFURA_API_KEY}`,
         url: `https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY}`,
-        blockNumber: 19391610, // iip-39
+        blockNumber: 19419791, // iip-39
         // blockNumber: 17634301 // iip-37
         // blockNumber: 17465062 // iip-36
         // blockNumber: 17216816 // iip-35

@@ -214,82 +214,71 @@ const checkEffects = async (
   console.log('newGovTokens', newGovTokens);
   check(newGovTokens.length == allGovTokens.length, `Gov tokens length did not change`);
 
-  // REMOVE
-  const tokensNew = await idleToken.getAllAvailableTokens();
-  console.log('tokensNew', tokensNew);
-  let wrapper = await idleToken.protocolWrappers(tokensNew[2]);
-  console.log('wrapper', wrapper);
-  const wrapContract = await hre.ethers.getContractAt(ILendingProtocolABI, wrapper);
-  console.log('apr', await wrapContract.getAPR());
-
-  // const aprs = await idleToken.getAPRs();
-
-
-  // let newProtocolTokens = [...(await idleToken.getAPRs())["0"]].map(x => x.toLowerCase());
-  // if (isRemoving) {
-  //   check(newProtocolTokens.length == oldProtocolTokens.length - 1, `Protocol tokens length decreased by 1`);
-  // } else if (isReplacing) {
-  //   check(newProtocolTokens.length == oldProtocolTokens.length, `Protocol tokens length did not change`);
-  // } else {
-  //   check(newProtocolTokens[newProtocolTokens.length - 1].toLowerCase() == newProtocolToken,
-  //   `New token added is the correct one`);
-  // }
+  let newProtocolTokens = [...(await idleToken.getAPRs())["0"]].map(x => x.toLowerCase());
+  if (isRemoving) {
+    check(newProtocolTokens.length == oldProtocolTokens.length - 1, `Protocol tokens length decreased by 1`);
+  } else if (isReplacing) {
+    check(newProtocolTokens.length == oldProtocolTokens.length, `Protocol tokens length did not change: ${newProtocolTokens.length}`);
+  } else {
+    check(newProtocolTokens[newProtocolTokens.length - 1].toLowerCase() == newProtocolToken,
+    `New token added is the correct one`);
+  }
   
-  // const newWrappers = [];
-  // const oldTokenIdx = oldProtocolToken ? oldProtocolTokens.indexOf(oldProtocolToken) : null;
+  const newWrappers = [];
+  const oldTokenIdx = oldProtocolToken ? oldProtocolTokens.indexOf(oldProtocolToken) : null;
 
-  // for (var i = 0; i < newProtocolTokens.length; i++) {
-  //   const token = await hre.ethers.getContractAt(ERC20_ABI, newProtocolTokens[i]);
-  //   const wrapper = await idleToken.protocolWrappers(token.address);
-  //   console.log(await token.name(), token.address, " => ", wrapper);
-  //   if (isReplacing && oldTokenIdx != null && i == oldTokenIdx) {
-  //     check(wrapper.toLowerCase() == newWrapper.toLowerCase(), `Old wrapper replaced`);
-  //     check(token.toLowerCase() == newProtocolToken.toLowerCase(), `Old token replaced`);
-  //   }
+  for (var i = 0; i < newProtocolTokens.length; i++) {
+    const token = await hre.ethers.getContractAt(ERC20_ABI, newProtocolTokens[i]);
+    const wrapper = await idleToken.protocolWrappers(token.address);
+    console.log(await token.name(), token.address, " => ", wrapper);
+    if (isReplacing && oldTokenIdx != null && i == oldTokenIdx) {
+      check(wrapper.toLowerCase() == newWrapper.toLowerCase(), `Old wrapper replaced`);
+      check(token.address.toLowerCase() == newProtocolToken.toLowerCase(), `Old token replaced`);
+    }
 
-  //   if (isReplacing && oldTokenIdx == null) {
-  //     console.log('ERROR: oldTokenIdx is null');
-  //   }
+    if (isReplacing && oldTokenIdx == null) {
+      console.log('ERROR: oldTokenIdx is null');
+    }
 
-  //   const govToken = await idleToken.getProtocolTokenToGov(token.address)
-  //   console.log('-- govToken: ', govToken);
-  //   newWrappers.push(wrapper);
-  // };
+    const govToken = await idleToken.getProtocolTokenToGov(token.address)
+    console.log('-- govToken: ', govToken);
+    newWrappers.push(wrapper);
+  };
 
-  // if (!isRemoving && !isReplacing) {
-  //   check(newWrappers[newWrappers.length - 1].toLowerCase() == newWrapper.toLowerCase(), `New wrapper added`);
-  // }
+  if (!isRemoving && !isReplacing) {
+    check(newWrappers[newWrappers.length - 1].toLowerCase() == newWrapper.toLowerCase(), `New wrapper added`);
+  }
 
-  // // Test rebalances idleToken all in new protocol
-  // // All funds in the new protocol
-  // let allocations = newProtocolTokens.map(
-  //   (_, i) => {
-  //     // if is adding, all funds in the new protocol (ie last one)
-  //     if (!isRemoving && !isReplacing && i == newProtocolTokens.length - 1) {
-  //       return 100000;
-  //     } else if (isReplacing && i == oldTokenIdx) {
-  //       return 100000;
-  //     } else {
-  //       return 0;
-  //     }
-  //   }
-  // );
-  // await hre.run("test-idle-token", { idleToken, allocations })
+  // Test rebalances idleToken all in new protocol
+  // All funds in the new protocol
+  let allocations = newProtocolTokens.map(
+    (_, i) => {
+      // if is adding, all funds in the new protocol (ie last one)
+      if (!isRemoving && !isReplacing && i == newProtocolTokens.length - 1) {
+        return 100000;
+      } else if (isReplacing && i == oldTokenIdx) {
+        return 100000;
+      } else {
+        return 0;
+      }
+    }
+  );
+  await hre.run("test-idle-token", { idleToken, allocations })
 
-  // // All funds in the first protocol
-  // // allocations = newProtocolTokens.map((_, i) => i == 0 ? 100000 : 0);
-  // allocations = newProtocolTokens.map(
-  //   (_, i) => {
-  //     // if is replacing a protocol (not with idx 0) or is not replacing => all on first protocol
-  //     if (((oldTokenIdx != null && oldTokenIdx != 0) || (oldTokenIdx == null)) && i == 0) {
-  //       return 100000;
-  //     } else if (oldTokenIdx != null && oldTokenIdx == 0 && i == 1) {
-  //       // if is replacing a protocol with idx 0 => all on second protocol
-  //       return 100000;
-  //     } else {
-  //       return 0;
-  //     }
-  //   }
-  // );
-  // await hre.run("test-idle-token", { idleToken, allocations })
+  // All funds in the first protocol
+  // allocations = newProtocolTokens.map((_, i) => i == 0 ? 100000 : 0);
+  allocations = newProtocolTokens.map(
+    (_, i) => {
+      // if is replacing a protocol (not with idx 0) or is not replacing => all on first protocol
+      if (((oldTokenIdx != null && oldTokenIdx != 0) || (oldTokenIdx == null)) && i == 0) {
+        return 100000;
+      } else if (oldTokenIdx != null && oldTokenIdx == 0 && i == 1) {
+        // if is replacing a protocol with idx 0 => all on second protocol
+        return 100000;
+      } else {
+        return 0;
+      }
+    }
+  );
+  await hre.run("test-idle-token", { idleToken, allocations })
 }
