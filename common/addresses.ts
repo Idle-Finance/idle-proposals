@@ -581,6 +581,10 @@ const AA_eWETHStaking = {
   'live': '0x2B7Da260F101Fb259710c0a4f2EfEf59f41C0810',
   'local': '0x2B7Da260F101Fb259710c0a4f2EfEf59f41C0810',
 };
+const AA_steakUSDC = {
+  'live': '0x2B0E31B8EE653D2077db86dea3ACf3F34ae9d5D2',
+  'local': '0x2B0E31B8EE653D2077db86dea3ACf3F34ae9d5D2',
+};
 const aFEI = {
   'live': '0x683923dB55Fead99A79Fa01A27EeC3cB19679cC3',
   'local': '0x683923dB55Fead99A79Fa01A27EeC3cB19679cC3',
@@ -777,6 +781,7 @@ module.exports = {
   AA_cpPOR_USDC,
   AA_cpFAS_USDT,
   AA_cpFAS_USDC,
+  AA_steakUSDC,
   idleDAIV4: idleDAIV4,
   idleUSDCV4: idleUSDCV4,
   idleUSDTV4: idleUSDTV4,
@@ -834,8 +839,10 @@ module.exports = {
   idleController: '0x275DA8e61ea8E02d51EDd8d0DC5c0E62b4CDB0BE',
   governorAlpha: '0x2256b25CFC8E35c3135664FD03E77595042fe31B',
   ecosystemFund: '0xb0aA1f98523Ec15932dd5fAAC5d86e57115571C7',
+  longTermFund: '0x107a369bc066c77ff061c7d2420618a6ce31b925',
   vesterFactory: '0xbF875f2C6e4Cc1688dfe4ECf79583193B6089972',
-  whale: '0x99c9fc46f92e8a1c0dec1b1747d010903e884be1',
+  whale: '0xD6153F5af5679a75cC85D8974463545181f48772',
+  // whale: '0x99c9fc46f92e8a1c0dec1b1747d010903e884be1',
   SUSDwhale: '0xa5f7a39e55d7878bc5bd754ee5d6bd7a7662355b',
   TUSDwhale: '0xf977814e90da44bfa03b6295a0616a897441acec',
   WETHwhale: '0x8EB8a3b98659Cce290402893d0123abb75E3ab28',
