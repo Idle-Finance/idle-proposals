@@ -30,14 +30,15 @@ const checkAlmostEqual = (a: any, b: any, tolerance: any, message: any) => {
   }
 }
 
-const iipDescription = "IIP-39: Add AA_mmSteakUSDC to IdleUSDC and remove AA_cpPOR_USDC. Stop IDLE emissions. Transfer IDLE for ROX deal";
+const iipDescription = "IIP-39: Add AA_mmSteakUSDC to IdleUSDC. Stop IDLE emissions. Transfer funds for ROX deal and Leagues budget";
 
 export default task("iip-39", iipDescription).setAction(async (_, hre) => {
   _hre = hre;
   const isLocalNet = hre.network.name == 'hardhat';
 
   const idle = await hre.ethers.getContractAt(ERC20_ABI, addresses.IDLE);
-  const usdc = await hre.ethers.getContractAt(ERC20_ABI, addresses.USDC.live);
+  const usdc = await hre.ethers.getContractAt(ERC20_ABI, '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48');
+  // const usdc = await hre.ethers.getContractAt(ERC20_ABI, addresses.USDC.live);
   const distributor = await hre.ethers.getContractAt(DISTRIBUTOR_ABI, addresses.gaugeDistributor);
   const idleController = await hre.ethers.getContractAt(IDLE_CONTROLLER_ABI, addresses.idleController);
   const ecosystemFund = await hre.ethers.getContractAt(GOVERNABLE_FUND, addresses.ecosystemFund)
@@ -56,32 +57,31 @@ export default task("iip-39", iipDescription).setAction(async (_, hre) => {
   // New wrappers and protocol token for aa tranches
   const wrapper = '0x96Dd27112bDd615c3A2D649fe22d8eE27e448152';
   const protocolToken = addresses.AA_steakUSDC.live.toLowerCase();
-  // To be replaced
-  const oldProtocolToken = addresses.AA_cpPOR_USDC.live.toLowerCase();
-  const paramUSDC = await getParamsForSetAll(idleToken, wrapper, protocolToken, oldProtocolToken, hre);
-  
+  const paramUSDC = await getParamsForSetAll(idleToken, wrapper, protocolToken, addresses.addr0, hre);
   // ############# END PARAMS for metamorpho ##########
-
-  // ############# PARAMS for ROX deal #############
-  const idleRoxReceiver = addresses.treasuryMultisig;
-  const idleFromLongTermLPFund = toBN("1733333").mul(ONE);
-  console.log(`📄 IDLE receiver ${idleRoxReceiver}, amount: ${idleFromLongTermLPFund.div(ONE)}`);
   
-  const usdcFromFeeTreasury = toBN("150000").mul(ONE6);
+  // ############# PARAMS for ROX deal and Leagues #############
+  const idleReceiver = addresses.treasuryMultisig;
+  const idleFrom = addresses.ecosystemFund;
+  const idleFromEcosystemFund = toBN("66490").mul(ONE);
+  console.log(`📄 IDLE receiver ${idleReceiver}, amount: ${idleFromEcosystemFund.div(ONE)}`);
+  
   const usdcReceiver = addresses.treasuryMultisig;
+  const usdcFrom = addresses.feeTreasury;
+  const usdcFromFeeTreasury = toBN("125000").mul(ONE6);
   console.log(`📄 USDC receiver ${usdcReceiver}, amount: ${usdcFromFeeTreasury.div(ONE6)}`);
-
+  
   // Get balances for tests
-  const longTermFundIDLEBalanceBefore = await idle.balanceOf(addresses.longTermFund);
-  const feeTreasuryUSDCBalanceBefore = await usdc.balanceOf(addresses.feeTreasury);
-  const roxIDLEBalanceBefore = await idle.balanceOf(idleRoxReceiver);
+  const ecosystemFundIDLEBalanceBefore = await idle.balanceOf(idleFrom);
+  const feeTreasuryUSDCBalanceBefore = await usdc.balanceOf(usdcFrom);
+  const idleReceiverBalanceBefore = await idle.balanceOf(idleReceiver);
   const tlmultisigUSDCBalanceBefore = await usdc.balanceOf(usdcReceiver);
   // ############# END PARAMS for BUDGET ##########
-
+  
   // ############# PARAMS for stopping IDLE emissions ##########
   const newControllerRate = toBN(0);
   // ############# END PARAMS for topping emissions ############
-
+  
   let proposalBuilder = hre.proposals.builders.alpha();
   proposalBuilder = proposalBuilder
     .addContractAction(idleController, "_setIdleRate", [newControllerRate])
@@ -95,15 +95,14 @@ export default task("iip-39", iipDescription).setAction(async (_, hre) => {
       [addresses.treasuryMultisig], 
       [addresses.idleUSDCV4, addresses.idleDAIV4, addresses.idleUSDTV4, addresses.idleWETHV4]
     ])
-    .addContractAction(longTermFund, "transfer", [addresses.IDLE, idleRoxReceiver, idleFromLongTermLPFund])
-    // TODO uncomment this
-    // .addContractAction(feeTreasury, "transfer", [addresses.USDC, usdcReceiver, usdcFromFeeTreasury])
-
-  // Print and execute proposal
-  proposalBuilder.setDescription(iipDescription);
-  const proposal = proposalBuilder.build()
-  await proposal.printProposalInfo();
-  await hre.run('execute-proposal-or-simulate', { proposal, isLocalNet });
+    .addContractAction(ecosystemFund, "transfer", [addresses.IDLE, idleReceiver, idleFromEcosystemFund])
+    .addContractAction(feeTreasury, "transfer", [addresses.USDC.live, usdcReceiver, usdcFromFeeTreasury])
+    
+    // Print and execute proposal
+    proposalBuilder.setDescription(iipDescription);
+    const proposal = proposalBuilder.build()
+    await proposal.printProposalInfo();
+    await hre.run('execute-proposal-or-simulate', { proposal, isLocalNet });
 
   // Skip tests in mainnet
   if (!isLocalNet) {
@@ -113,7 +112,7 @@ export default task("iip-39", iipDescription).setAction(async (_, hre) => {
 
   // Check that new protocols are added
   console.log('Checking idleUSDC...');
-  await checkEffects(idleToken, allGovTokens, wrapper, protocolToken, oldProtocolToken, paramUSDC.oldProtocolTokens, hre);
+  await checkEffects(idleToken, allGovTokens, wrapper, protocolToken, addresses.addr0, paramUSDC.oldProtocolTokens, hre);
   
   // check that controller rate is set to 0
   console.log('Checking IdleController...');
@@ -128,17 +127,17 @@ export default task("iip-39", iipDescription).setAction(async (_, hre) => {
   
   // check that IDLE funds are sent to longTermFund
   console.log('Checking IDLE funds...');
-  const longTermFundIDLEBalanceAfter = await idle.balanceOf(addresses.longTermFund);
-  const roxIDLEBalanceAfter = await idle.balanceOf(idleRoxReceiver);
-  checkAlmostEqual(longTermFundIDLEBalanceAfter, longTermFundIDLEBalanceBefore.sub(idleFromLongTermLPFund), toBN(0), `IDLE transferred from longTermFund`);
-  checkAlmostEqual(roxIDLEBalanceAfter, roxIDLEBalanceBefore.add(idleFromLongTermLPFund), toBN(0), `IDLE transferred to roxReceiver`);
+  const ecosystemFundIDLEBalanceAfter = await idle.balanceOf(addresses.ecosystemFund);
+  const roxIDLEBalanceAfter = await idle.balanceOf(idleReceiver);
+  checkAlmostEqual(ecosystemFundIDLEBalanceAfter, ecosystemFundIDLEBalanceBefore.sub(idleFromEcosystemFund), toBN(0), `IDLE transferred from ecosystemFund`);
+  checkAlmostEqual(roxIDLEBalanceAfter, idleReceiverBalanceBefore.add(idleFromEcosystemFund), toBN(0), `IDLE transferred to roxReceiver`);
+
   // check that USDC funds are sent to longTermFund
   console.log('Checking USDC funds...');
-  console.log('TODO uncomment!')
-  // const feeTreasuryUSDCBalanceAfter = await usdc.balanceOf(addresses.feeTreasury);
-  // const tlmultisigUSDCBalanceAfter = await usdc.balanceOf(usdcReceiver);
-  // checkAlmostEqual(feeTreasuryUSDCBalanceAfter, feeTreasuryUSDCBalanceBefore.sub(usdcFromFeeTreasury), toBN(0), `USDC transferred from feeTreasury`);
-  // checkAlmostEqual(tlmultisigUSDCBalanceAfter, tlmultisigUSDCBalanceBefore.add(usdcFromFeeTreasury), toBN(0), `USDC transferred to tlmultisig`);
+  const feeTreasuryUSDCBalanceAfter = await usdc.balanceOf(usdcFrom);
+  const tlmultisigUSDCBalanceAfter = await usdc.balanceOf(usdcReceiver);
+  checkAlmostEqual(feeTreasuryUSDCBalanceAfter, feeTreasuryUSDCBalanceBefore.sub(usdcFromFeeTreasury), toBN(100), `USDC transferred from feeTreasury`);
+  checkAlmostEqual(tlmultisigUSDCBalanceAfter, tlmultisigUSDCBalanceBefore.add(usdcFromFeeTreasury), toBN(0), `USDC transferred to tlmultisig`);
 });
 
 const getParamsForSetAll = async (
