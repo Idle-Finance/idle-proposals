@@ -60,7 +60,7 @@ export default task("iip-42", iipDescription).setAction(async (_, hre) => {
   // ############# PARAMS for M1 2025 Leagues budget #############
   const fundsReceiver = addresses.treasuryMultisig;
   const fundsFrom = addresses.feeTreasury;
-  const fundsFromFeeTreasury = toBN("95000").mul(ONE6);
+  const fundsFromFeeTreasury = toBN("138000").mul(ONE6);
   console.log(`📄 USDT receiver ${fundsReceiver}, amount: ${fundsFromFeeTreasury.div(ONE6)}`);
 
   // Get balances for tests
